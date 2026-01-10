@@ -10,6 +10,9 @@
 
 :root {
   --nav-height: 0px;
+  /* Вертикальная позиция кнопки на десктопе/планшете (проценты от верхнего края hero).
+     Можете менять здесь (например 20%, 30%...) чтобы поднять/опустить кнопку. */
+  --hero-cta-top: 25%;
 }
 
 html {
@@ -157,13 +160,14 @@ header.hero {
   scroll-margin-top: var(--nav-height);
 }
 
-/* Кнопка — теперь абсолютная, между заголовком на изображении и головой человечка.
-   Подогнанная позиция top: 38% для десктопа; поправим в медиазапросах. */
+/* Кнопка — абсолютная.
+   Используем CSS-переменную --hero-cta-top для контроля позиции на десктоп/планшетах.
+   На мобильных переопределяется (нижняя позиция через bottom). */
 .hero-cta {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 25%;
+  top: var(--hero-cta-top);
   z-index: 30;
   background: white;
   color: #166534;
@@ -173,14 +177,15 @@ header.hero {
   border: none;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(16,185,129,0.12);
+  transition: all 0.18s ease;
 }
 
-/* небольшой фокус-стиль */
+/* фокус-стиль */
 .hero-cta:focus {
   outline: 3px solid rgba(34,197,94,0.18);
 }
 
-/* Стили кнопки сохраняем для прочих мест */
+/* альтернативный универсальный стиль кнопок */
 .btn {
   background: white;
   color: #166534;
@@ -345,11 +350,13 @@ footer {
 }
 
 /* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
+/* Планшеты: немного ниже, если нужно */
 @media (max-width: 1024px) {
-  /* чуть выше на средних экранах */
-  .hero-cta { top: 40%; padding: 10px 22px; }
+  :root { --hero-cta-top: 32%; } /* при необходимости правьте тут */
+  .hero-cta { padding: 10px 22px; }
 }
 
+/* Мобильные: используем привязку снизу (bottom) — так кнопка стабильно располагается над землёй/человечком */
 @media (max-width: 768px) {
   :root { --nav-height: 56px; }
   section,
@@ -361,13 +368,22 @@ footer {
 
   .site-logo { height: 96px; }
 
-  /* На мобильных используем cover и меньшую высоту, кнопка опускается ниже */
+  /* фон под мобильные */
   header.hero {
     background-size: cover;
     background-position: center;
     min-height: 50vh;
   }
-  .hero-cta { top: 55%; left: 50%; transform: translateX(-50%); padding: 10px 18px; }
+
+  /* переключаемся на позицию от низа, чтобы кнопка не "улетала" вверх при cover */
+  .hero-cta {
+    top: auto;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 18px;
+    font-size: 15px;
+  }
 
   .nav ul {
     flex-wrap: nowrap;
@@ -434,7 +450,7 @@ footer {
   </div>
 </nav>
 
-<!-- Заголовок и подзаголовок убраны. Кнопка — абсолютная и расположена поверх hero (между заголовком на картинке и головой человечка) -->
+<!-- Кнопка — абсолютная и расположена поверх hero -->
 <header id="home" class="hero" role="img" aria-label="Баннер 'Расти свой сад с УралРостСад'">
   <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
 </header>
@@ -595,7 +611,7 @@ footer {
   if(closeBtn) closeBtn.addEventListener('click',closeModal);
   if(overlay) overlay.addEventListener('click',closeModal);
 
-  // Навигационные стрелки
+  // Навигационны�� стрелки
   var navUl = document.getElementById('mainNav');
   var leftBtn = document.querySelector('.nav-arrow-left');
   var rightBtn = document.querySelector('.nav-arrow-right');
