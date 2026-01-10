@@ -10,6 +10,8 @@
 
 :root {
   --nav-height: 0px;
+  /* Вертикальная позиция кнопки на десктопе/планшете (проценты от верхнего края hero).
+     Можете менять здесь (например 20%, 30%...) чтобы поднять/опустить кнопку. */
   --hero-cta-top: 25%;
 }
 
@@ -70,10 +72,11 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
 }
 .site-logo {
-  height: 140px;
+  height: 140px; /* десктоп */
   width: auto;
   display: block;
   object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 /* ===== НАВИГАЦИЯ ===== */
@@ -86,14 +89,61 @@ a { text-decoration: none; color: inherit; }
   z-index: 1000;
   overflow: visible;
 }
-.nav-inner { position: relative; max-width: 1200px; margin: auto; padding: 12px 20px; }
-.nav ul { display: flex; justify-content: center; list-style: none; gap: 26px; align-items: center; flex-wrap: wrap; padding: 0; margin: 0; }
-.nav a { color: white; font-weight: bold; white-space: nowrap; display: inline-block; padding: 6px 8px; }
 
-/* ===== ПЕРВЫЙ ЭКРАН (БАННЕР) ===== */
-/* Десктоп/основной баннер — ваш файл 1920x700 (img/hero3.png) */
-header.hero {
+/* Навигация: центрирование с gap и поддержкой прокрутки */
+.nav-inner {
   position: relative;
+  max-width: 1200px;
+  margin: auto;
+  padding: 12px 20px;
+}
+
+.nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  gap: 26px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+.nav a {
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  display: inline-block;
+  padding: 6px 8px;
+}
+
+/* Кнопки-стрелки для горизонтальной прокрутки меню */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.95);
+  color: #166534;
+  font-size: 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  z-index: 1200;
+}
+.nav-arrow:focus { outline: 2px solid rgba(34,197,94,0.5); }
+.nav-arrow-left { left: 8px; }
+.nav-arrow-right { right: 8px; }
+
+/* ===== ПЕРВЫЙ ЭКРАН (БАННЕР С ВАШИМ ИЗОБРАЖЕНИЕМ) ===== */
+/* Используем ваше готовое изображение 1920x700, положите его как img/hero3.png */
+header.hero {
+  position: relative; /* важно для абсолютного позиционирования кнопки */
   min-height: 700px;
   background-image:
     linear-gradient(rgba(6,58,20,0.18), rgba(34,197,94,0.06)),
@@ -110,7 +160,9 @@ header.hero {
   scroll-margin-top: var(--nav-height);
 }
 
-/* Кнопка CTA (позиция управляется переменной --hero-cta-top) */
+/* Кнопка — абсолютная.
+   Используем CSS-переменную --hero-cta-top для контроля позиции на десктоп/планшетах.
+   На мобильных переопределяется (нижняя позиция через bottom). */
 .hero-cta {
   position: absolute;
   left: 50%;
@@ -125,6 +177,23 @@ header.hero {
   border: none;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(16,185,129,0.12);
+  transition: all 0.18s ease;
+}
+
+/* фокус-стиль */
+.hero-cta:focus {
+  outline: 3px solid rgba(34,197,94,0.18);
+}
+
+/* альтернативный универсальный стиль кнопок */
+.btn {
+  background: white;
+  color: #166534;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+  cursor: pointer;
 }
 
 /* ===== КОНТЕНТ ===== */
@@ -135,32 +204,178 @@ section {
   scroll-margin-top: var(--nav-height);
 }
 
-/* остальные стили не изменены — оставлены как раньше (пропущены для краткости) */
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-.card { padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.card {
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.problem { background: #fef2f2; }
+.quiz { background: #f9fafb; }
+
+/* ===== КАТЕГОРИИ ТОВАРОВ ===== */
+.categories .category-card {
+  padding: 24px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f7fdf8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-height: 140px;
+  justify-content: center;
+}
+.category-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+.category-title {
+  font-weight: 700;
+  color: #0f5132;
+  text-align: center;
+}
+
+/* ===== ПРЕИМУЩЕСТВА ===== */
+.advantages .adv-card {
+  padding: 26px;
+  border-radius: 12px;
+  background: linear-gradient(180deg,#ffffff,#f3fff5);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  min-height: 110px;
+  text-align: left;
+}
+.adv-card .adv-icon {
+  font-size: 28px;
+  color: #16a34a;
+  width: 40px;
+  text-align: center;
+}
+.adv-card .adv-text {
+  font-weight: 700;
+  color: #0f5132;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #111827;
+  color: #d1d5db;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3000;
+  transition: opacity 0.35s ease;
+}
+
+.modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background 0.35s ease;
+}
+
+.modal.active .modal-overlay {
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  width: 320px;
+  max-width: 90%;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  padding: 30px 25px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: all 0.35s ease;
+}
+
+.modal.active .modal-content {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.telegram-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: #229ED9;
+  font-weight: bold;
+}
+
+.telegram-link img {
+  width: 64px;
+  height: 64px;
+}
 
 /* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
-/* Для планшетов можно настроить переменную (пример) */
+/* Планшеты: немного ниже, если нужно */
 @media (max-width: 1024px) {
-  :root { --hero-cta-top: 32%; }
+  :root { --hero-cta-top: 32%; } /* при необходимости правьте тут */
   .hero-cta { padding: 10px 22px; }
 }
 
-/* --- Здесь подставляем мобильную картинку, которую вы сделали.
-     Укажите своё имя файла, если отличается (сейчас использован img/hero3-480x175.png). */
+/* Мобильные: используем привязку снизу (bottom) — так кнопка стабильно располагается над землёй/человечком */
 @media (max-width: 768px) {
   :root { --nav-height: 56px; }
+  section,
+  header.hero { scroll-margin-top: var(--nav-height); }
+  .top-header-inner { grid-template-columns: 1fr; padding: 15px 20px; text-align: center; }
+  .header-left, .header-right { text-align: center; font-size: 13px; }
+  .header-right { justify-self: center; }
+  .logo { margin: 12px 0; }
+
+  .site-logo { height: 96px; }
+
+  /* фон под мобильные */
   header.hero {
-    /* подменяем фон на мобильную версию и делаем cover для корректного заполнения */
-    background-image:
-      linear-gradient(rgba(6,58,20,0.18), rgba(34,197,94,0.06)),
-      url('img/hero3-480x175.png');
     background-size: cover;
     background-position: center;
     min-height: 50vh;
   }
 
-  /* на мобил��ных позиционируем кнопку относительно низа (устойчивее при cover) */
+  /* переключаемся на позицию от низа, чтобы кнопка не "улетала" вверх при cover */
   .hero-cta {
     top: auto;
     bottom: 12%;
@@ -169,9 +384,31 @@ section {
     padding: 10px 18px;
     font-size: 15px;
   }
+
+  .nav ul {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 22px;
+    padding-bottom: 6px;
+  }
+  .nav ul::-webkit-scrollbar { display: none; }
+
+  .nav-arrow { display: flex; }
+
+  .nav a { padding: 8px 10px; font-size: 14px; }
+  section { padding: 45px 15px; }
+  .card { padding: 20px; }
+  .categories .category-card { padding: 18px; min-height: 120px; }
+  .advantages .adv-card { padding: 18px; min-height: 90px; }
 }
 
-/* остальные медиазапросы / стили оставлены как в исходнике (предыдущий код) */
+@media (min-width: 769px) {
+  .nav ul {
+    overflow: visible;
+  }
+}
 </style>
 </head>
 
@@ -180,10 +417,14 @@ section {
 <div class="top-header">
   <div class="top-header-inner">
     <div class="header-left">
-      <p><strong>г. Пермь, ул. Трамвайная 14, литер Л, офис 203 (база "Кармента", синее здание)</strong></p>
-      <p>Январь - Июнь: Пн-Пт 09:00-18:00, Сб 09:00-15:00, Вс - выходной<br>Июнь - Январь: Пн-Пт 09:00-18:00, Сб-Вс - выходные</p>
+      <p><strong>г. Пермь, ул. Трамвайная 14, литер Л, офис 203 (база "Кармента", синее здание")</strong></p>
+      <p>
+        Январь - Июнь: Пн-Пт 09:00-18:00, Сб 09:00-15:00, Вс - выходной<br>
+        Июнь - Январь: Пн-Пт 09:00-18:00, Сб-Вс - выходные
+      </p>
     </div>
 
+    <!-- логотип из папки img -->
     <a href="#home" class="logo" aria-label="УралРостСад — главная">
       <img src="img/logo2.png" alt="УралРостСад" class="site-logo" />
     </a>
@@ -197,6 +438,7 @@ section {
 
 <nav class="nav" aria-label="Главное меню">
   <div class="nav-inner">
+    <button class="nav-arrow nav-arrow-left" aria-hidden="true" title="Прокрутить влево" aria-label="Прокрутить влево">‹</button>
     <ul id="mainNav">
       <li><a href="#home">Главная</a></li>
       <li><a href="#categories">Категории</a></li>
@@ -204,9 +446,11 @@ section {
       <li><a href="#delivery">Оплата и доставка</a></li>
       <li><a href="#articles">Статьи</a></li>
     </ul>
+    <button class="nav-arrow nav-arrow-right" aria-hidden="true" title="Прокрутить вправо" aria-label="Прокрутить вправо">›</button>
   </div>
 </nav>
 
+<!-- Кнопка — абсолютная и расположена поверх hero -->
 <header id="home" class="hero" role="img" aria-label="Баннер 'Расти свой сад с УралРостСад'">
   <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
 </header>
@@ -214,37 +458,209 @@ section {
 <section id="categories" class="categories">
   <h2>Категории товаров</h2>
   <div class="grid">
-    <div class="card">Удобрения</div>
-    <div class="card">Грунты, добавки в почву</div>
-    <div class="card">Средства от болезней и вредителей растений</div>
-    <div class="card">Гербициды (средства от сорняков)</div>
+    <div class="category-card">
+      <div class="category-icon">🌿</div>
+      <div class="category-title">Удобрения</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🪴</div>
+      <div class="category-title">Грунты, добавки в почву</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🧪</div>
+      <div class="category-title">Средства от болезней и вредителей растений</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">⚠️</div>
+      <div class="category-title">Гербициды (средства от сорняков)</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🏕️</div>
+      <div class="category-title">Парники, дуги, укрывной материал, сетка от птиц</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🦟</div>
+      <div class="category-title">Средства от комаров, ос, клещей, мошек, бытовых насекомых</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🚽</div>
+      <div class="category-title">Средства для дачных туалетов, выгребных ям и септиков</div>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🏊‍♂️</div>
+      <div class="category-title">Средства для бассейнов</div>
+    </div>
   </div>
+</section>
+
+<section id="advantages" class="advantages">
+  <h2>Наши преимущества</h2>
+  <div class="grid">
+    <div class="adv-card">
+      <div class="adv-icon">📦</div>
+      <div class="adv-text">Широкий ассортимент продукции</div>
+    </div>
+
+    <div class="adv-card">
+      <div class="adv-icon">💰</div>
+      <div class="adv-text">Выгодные цены</div>
+    </div>
+
+    <div class="adv-card">
+      <div class="adv-icon">✅</div>
+      <div class="adv-text">Проверенные производители</div>
+    </div>
+
+    <div class="adv-card">
+      <div class="adv-icon">📍</div>
+      <div class="adv-text">Удобное месторасположение и погрузка</div>
+    </div>
+  </div>
+</section>
+
+<section id="delivery">
+  <h2>Доставка и оплата</h2>
+  <div class="grid">
+    <div class="card">Быстрая доставка СДЭК</div>
+    <div class="card">Самовывоз</div>
+    <div class="card">Оплата: наличные, карта</div>
+  </div>
+</section>
+
+<section id="articles">
+  <h2>Статьи и советы</h2>
+  <p style="text-align:center;">Полезные материалы для садоводов и фермеров</p>
 </section>
 
 <footer>
   <p>© 2026 Магазин грунтов и удобрений</p>
 </footer>
 
+<!-- MODAL -->
+<div class="modal" id="priceModal">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Закрыть">&times;</button>
+    <a href="https://t.me/NikMelllll" target="_blank" class="telegram-link">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" />
+      <span>Написать нам в Telegram</span>
+    </a>
+  </div>
+</div>
+
 <script>
 (function(){
+  // Плавный скролл
   function updateVars(){
     var nav = document.querySelector('.nav');
     if(!nav) return;
     var navH = nav.offsetHeight;
     document.documentElement.style.setProperty('--nav-height', navH+'px');
+    document.documentElement.style.scrollPaddingTop = navH+'px';
   }
-  document.addEventListener('DOMContentLoaded', updateVars);
-  window.addEventListener('load', updateVars);
-  window.addEventListener('resize', updateVars);
+  function scrollToHash(hash,smooth){
+    if(!hash) return;
+    var el=document.querySelector(hash);
+    if(!el) return;
+    var navH=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'))||0;
+    var rect=el.getBoundingClientRect();
+    var target=window.pageYOffset+rect.top-navH-8;
+    window.scrollTo({top:target,behavior:smooth?'smooth':'auto'});
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href^="#"]');
+    if(!a) return;
+    var href=a.getAttribute('href');
+    if(!href||href=='#') return;
+    if(location.pathname===a.pathname&&location.hostname===a.hostname){
+      e.preventDefault();
+      updateVars();
+      scrollToHash(href,true);
+      history.pushState(null,'',href);
+    }
+  },false);
+  window.addEventListener('DOMContentLoaded',function(){updateVars();if(location.hash)setTimeout(function(){scrollToHash(location.hash,false);},50);});
+  window.addEventListener('load',updateVars);
+  window.addEventListener('resize',updateVars);
 
-  // modal + button logic (как было)
+  // MODAL LOGIC
   var openBtn=document.getElementById('openPriceModal');
   var modal=document.getElementById('priceModal');
+  var closeBtn=modal.querySelector('.modal-close');
+  var overlay=modal.querySelector('.modal-overlay');
+
   if(openBtn){
     openBtn.addEventListener('click',function(){
-      if(modal) modal.classList.add('active');
+      modal.classList.add('active');
       document.body.style.overflow='hidden';
     });
+  }
+
+  function closeModal(){
+    modal.classList.remove('active');
+    document.body.style.overflow='';
+  }
+
+  if(closeBtn) closeBtn.addEventListener('click',closeModal);
+  if(overlay) overlay.addEventListener('click',closeModal);
+
+  // Навигационны�� стрелки
+  var navUl = document.getElementById('mainNav');
+  var leftBtn = document.querySelector('.nav-arrow-left');
+  var rightBtn = document.querySelector('.nav-arrow-right');
+
+  if(navUl && leftBtn && rightBtn){
+    function scrollStep(){
+      return Math.round(navUl.clientWidth * 0.6);
+    }
+
+    leftBtn.addEventListener('click', function(){
+      navUl.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+    });
+    rightBtn.addEventListener('click', function(){
+      navUl.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+    });
+
+    function updateNavArrows(){
+      var scrollable = navUl.scrollWidth > navUl.clientWidth + 1;
+      if(!scrollable){
+        leftBtn.style.display = 'none';
+        rightBtn.style.display = 'none';
+        return;
+      }
+      leftBtn.style.display = 'flex';
+      rightBtn.style.display = 'flex';
+      if(navUl.scrollLeft <= 2){
+        leftBtn.setAttribute('aria-hidden','true');
+        leftBtn.disabled = true;
+        leftBtn.style.opacity = '0.5';
+      } else {
+        leftBtn.setAttribute('aria-hidden','false');
+        leftBtn.disabled = false;
+        leftBtn.style.opacity = '1';
+      }
+      if(navUl.scrollLeft + navUl.clientWidth >= navUl.scrollWidth - 2){
+        rightBtn.setAttribute('aria-hidden','true');
+        rightBtn.disabled = true;
+        rightBtn.style.opacity = '0.5';
+      } else {
+        rightBtn.setAttribute('aria-hidden','false');
+        rightBtn.disabled = false;
+        rightBtn.style.opacity = '1';
+      }
+    }
+
+    window.addEventListener('load', updateNavArrows);
+    window.addEventListener('resize', updateNavArrows);
+    navUl.addEventListener('scroll', updateNavArrows);
+    setTimeout(updateNavArrows, 50);
   }
 })();
 </script>
