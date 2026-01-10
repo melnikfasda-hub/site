@@ -69,7 +69,7 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
 }
 .site-logo {
-  height: 140px; /* увеличенная высота для десктопа */
+  height: 140px; /* десктоп */
   width: auto;
   display: block;
   object-fit: contain;
@@ -137,10 +137,17 @@ a { text-decoration: none; color: inherit; }
 .nav-arrow-left { left: 8px; }
 .nav-arrow-right { right: 8px; }
 
-/* ===== ПЕРВЫЙ ЭКРАН ===== */
+/* ===== ПЕРВЫЙ ЭКРАН (БАННЕР С ВАШИМ ИЗОБРАЖЕНИЕМ) ===== */
+/* Используем ваше готовое изображение 1920x700, положите его как img/hero3.png */
 header.hero {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #166534, #22c55e);
+  position: relative; /* важно для абсолютного позиционирования кнопки */
+  min-height: 700px;
+  background-image:
+    linear-gradient(rgba(6,58,20,0.18), rgba(34,197,94,0.06)),
+    url('img/hero3.png');
+  background-size: 100% auto;
+  background-position: center center;
+  background-repeat: no-repeat;
   color: white;
   display: flex;
   align-items: center;
@@ -150,20 +157,34 @@ header.hero {
   scroll-margin-top: var(--nav-height);
 }
 
-header.hero h1 {
-  font-size: 44px;
-  margin-bottom: 20px;
+/* Кнопка — теперь абсолютная, между заголовком на изображении и головой человечка.
+   Подогнанная позиция top: 38% для десктопа; поправим в медиазапросах. */
+.hero-cta {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 25%;
+  z-index: 30;
+  background: white;
+  color: #166534;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(16,185,129,0.12);
 }
 
-header.hero p {
-  font-size: 20px;
-  margin-bottom: 30px;
+/* небольшой фокус-стиль */
+.hero-cta:focus {
+  outline: 3px solid rgba(34,197,94,0.18);
 }
 
+/* Стили кнопки сохраняем для прочих мест */
 .btn {
   background: white;
   color: #166534;
-  padding: 15px 30px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-weight: bold;
   display: inline-block;
@@ -324,19 +345,30 @@ footer {
 }
 
 /* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
+@media (max-width: 1024px) {
+  /* чуть выше на средних экранах */
+  .hero-cta { top: 40%; padding: 10px 22px; }
+}
+
 @media (max-width: 768px) {
   :root { --nav-height: 56px; }
   section,
-  header.hero { scroll-margin-top: var(--top-header-height); }
+  header.hero { scroll-margin-top: var(--nav-height); }
   .top-header-inner { grid-template-columns: 1fr; padding: 15px 20px; text-align: center; }
   .header-left, .header-right { text-align: center; font-size: 13px; }
   .header-right { justify-self: center; }
   .logo { margin: 12px 0; }
 
-  /* уменьшённый, но больший чем раньше размер логотипа на мобильных */
   .site-logo { height: 96px; }
 
-  /* На мобильных — горизон��альный скролл для меню */
+  /* На мобильных используем cover и меньшую высоту, кнопка опускается ниже */
+  header.hero {
+    background-size: cover;
+    background-position: center;
+    min-height: 50vh;
+  }
+  .hero-cta { top: 55%; left: 50%; transform: translateX(-50%); padding: 10px 18px; }
+
   .nav ul {
     flex-wrap: nowrap;
     justify-content: flex-start;
@@ -350,8 +382,6 @@ footer {
   .nav-arrow { display: flex; }
 
   .nav a { padding: 8px 10px; font-size: 14px; }
-  header.hero h1 { font-size: 26px; }
-  header.hero p { font-size: 16px; }
   section { padding: 45px 15px; }
   .card { padding: 20px; }
   .categories .category-card { padding: 18px; min-height: 120px; }
@@ -371,10 +401,10 @@ footer {
 <div class="top-header">
   <div class="top-header-inner">
     <div class="header-left">
-      <p><strong>г. Пермь, ул. Трамвайная 14, литер Л, офис 203</strong></p>
+      <p><strong>г. Пермь, ул. Трамвайная 14, литер Л, офис 203 (база "Кармента", синее здание")</strong></p>
       <p>
-        Январь – Июнь: Пн–Пт 09:00��18:00, Сб 09:00–15:00, Вс — выходной<br>
-        Июнь – Январь: Пн–Пт 09:00–18:00, Сб–Вс — выходные
+        Январь - Июнь: Пн-Пт 09:00-18:00, Сб 09:00-15:00, Вс - выходной<br>
+        Июнь - Январь: Пн-Пт 09:00-18:00, Сб-Вс - выходные
       </p>
     </div>
 
@@ -404,12 +434,9 @@ footer {
   </div>
 </nav>
 
-<header id="home" class="hero">
-  <div>
-    <h1>Увеличьте урожайность до 50% с профессиональными грунтами</h1>
-    <p>Грунты и удобрения для дома, теплиц и открытого грунта</p>
-    <button class="btn" id="openPriceModal">Получить актуальный прайс</button>
-  </div>
+<!-- Заголовок и подзаголовок убраны. Кнопка — абсолютная и расположена поверх hero (между заголовком на картинке и головой человечка) -->
+<header id="home" class="hero" role="img" aria-label="Баннер 'Расти свой сад с УралРостСад'">
+  <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
 </header>
 
 <section id="categories" class="categories">
