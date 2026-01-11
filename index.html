@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Магазин удобрений и грунтов</title>
 
@@ -10,8 +10,7 @@
 
 :root {
   --nav-height: 0px;
-  /* Вертикальная позиция кнопки на десктопе/планшете (проценты от верхнего края hero).
-     Можете менять здесь (например 20%, 30%...) чтобы поднять/опустить кнопку. */
+  /* Вертикальная позиция кнопки на десктопе/планшете (проценты от верхнего края hero). */
   --hero-cta-top: 25%;
 }
 
@@ -141,16 +140,13 @@ a { text-decoration: none; color: inherit; }
 .nav-arrow-right { right: 8px; }
 
 /* ===== ПЕРВЫЙ ЭКРАН (БАННЕР С ВАШИМ ИЗОБРАЖЕНИЕМ) ===== */
-/* Используем ваше готовое изображение 1920x700, положите его как img/hero3.png */
+/* Используем <img> с object-fit: contain чтобы избежать некорректного обрезания.
+   Поверх картинки добавлен градиент через псевдоэлемент. */
 header.hero {
-  position: relative; /* важно для абсолютного позиционирования кнопки */
+  position: relative; /* важно для абсолютного позиционирования кнопки и картинки */
   min-height: 700px;
-  background-image:
-    linear-gradient(rgba(6,58,20,0.18), rgba(34,197,94,0.06)),
-    url('img/hero3.png');
-  background-size: 100% auto;
-  background-position: center center;
-  background-repeat: no-repeat;
+  height: auto;
+  overflow: hidden;
   color: white;
   display: flex;
   align-items: center;
@@ -158,6 +154,30 @@ header.hero {
   text-align: center;
   padding: 40px 20px;
   scroll-margin-top: var(--nav-height);
+  background-color: #062e14; /* fallback, будет видно если есть поля при contain */
+}
+
+/* Градиент поверх изображения (чтобы текст/кнопка читались) */
+header.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(6,58,20,0.18), rgba(34,197,94,0.06));
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Само изображение — занимает весь блок header, но сохраняет пропорции благодаря object-fit */
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* <- ключ: не обрезает изображение */
+  object-position: center center;
+  z-index: 1;
+  pointer-events: none; /* чтобы не мешало кликам по кнопке */
+  -o-object-fit: contain;
 }
 
 /* Кнопка — абсолютная.
@@ -168,7 +188,7 @@ header.hero {
   left: 50%;
   transform: translateX(-50%);
   top: var(--hero-cta-top);
-  z-index: 30;
+  z-index: 30; /* над градиентом и картинкой */
   background: white;
   color: #166534;
   padding: 12px 28px;
@@ -354,9 +374,11 @@ footer {
 @media (max-width: 1024px) {
   :root { --hero-cta-top: 32%; } /* при необходимости правьте тут */
   .hero-cta { padding: 10px 22px; }
+  header.hero { min-height: 60vh; }
 }
 
-/* Мобильные: используем привязку снизу (bottom) — так кнопка стабильно располагается над землёй/человечком */
+/* Мобильные: делаем header ровно как видимая область (без нав-бара) чтобы кнопка была в зоне видимости.
+   Также оставляем object-fit: contain, чтобы изображение не обрезалось. */
 @media (max-width: 768px) {
   :root { --nav-height: 56px; }
   section,
@@ -368,17 +390,22 @@ footer {
 
   .site-logo { height: 96px; }
 
-  /* фон под мобильные */
+  /* делаем hero точно по высоте видимой области минус высота навбара (чтобы кнопка показывалась сразу) */
   header.hero {
-    background-size: cover;
-    background-position: center;
-    min-height: 50vh;
+    height: calc(100vh - var(--nav-height));
+    min-height: auto;
+    padding: 20px;
   }
 
-  /* переключаемся на позицию от низа, чтобы кнопка не "улетала" вверх при cover */
+  .hero-image {
+    object-fit: contain; /* сохраняем целиком изображение — нет некорректного обрезания */
+    object-position: center top;
+  }
+
+  /* переключаемся на позицию от низа, чтобы кнопка стабильно располагается */
   .hero-cta {
     top: auto;
-    bottom: 12%;
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     padding: 10px 18px;
@@ -450,8 +477,10 @@ footer {
   </div>
 </nav>
 
-<!-- Кнопка — абсолютная и расположена поверх hero -->
+<!-- Кнопка — абсолютная и расположена поверх hero.
+     Используем реальное изображение с object-fit внутри header, чтобы избежать случайной обрезки. -->
 <header id="home" class="hero" role="img" aria-label="Баннер 'Расти свой сад с УралРостСад'">
+  <img src="img/hero3.png" alt="Расти свой сад с УралРостСад" class="hero-image" />
   <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
 </header>
 
@@ -611,7 +640,7 @@ footer {
   if(closeBtn) closeBtn.addEventListener('click',closeModal);
   if(overlay) overlay.addEventListener('click',closeModal);
 
-  // Навигационны�� стрелки
+  // Навигационные стрелки
   var navUl = document.getElementById('mainNav');
   var leftBtn = document.querySelector('.nav-arrow-left');
   var rightBtn = document.querySelector('.nav-arrow-right');
