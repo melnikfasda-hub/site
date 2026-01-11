@@ -140,8 +140,9 @@ a { text-decoration: none; color: inherit; }
 .nav-arrow-right { right: 8px; }
 
 /* ===== ПЕРВЫЙ ЭКРАН (БАННЕР С ВАШИМ ИЗОБРАЖЕНИЕМ) ===== */
-/* Используем <img> с object-fit: contain чтобы избежать некорректного обрезания.
-   Поверх картинки добавлен градиент через псевдоэлемент. */
+/* header теперь содержит реальную картинку + content wrapper.
+   На десктопе используем object-fit: cover чтобы убрать «зеленые полосы».
+   На мобильных — object-fit: contain чтобы не обрезать важные элементы. */
 header.hero {
   position: relative; /* важно для абсолютного позиционирования кнопки и картинки */
   min-height: 700px;
@@ -154,7 +155,7 @@ header.hero {
   text-align: center;
   padding: 40px 20px;
   scroll-margin-top: var(--nav-height);
-  background-color: #062e14; /* fallback, будет видно если есть поля при contain */
+  background-color: #062e14; /* fallback, виден если останутся поля у картинки */
 }
 
 /* Градиент поверх изображения (чтобы текст/кнопка читались) */
@@ -167,28 +168,47 @@ header.hero::before {
   pointer-events: none;
 }
 
-/* Само изображение — занимает весь блок header, но сохраняет пропорции благодаря object-fit */
+/* Фоновая картинка — под контентом */
 .hero-image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* <- ключ: не обрезает изображение */
-  object-position: center center;
+  object-fit: cover;        /* Десктоп: заполняет блок - убирает зелёные полосы */
+  object-position: center bottom;
   z-index: 1;
   pointer-events: none; /* чтобы не мешало кликам по кнопке */
-  -o-object-fit: contain;
+  -o-object-fit: cover;
 }
 
-/* Кнопка — абсолютная.
-   Используем CSS-переменную --hero-cta-top для контроля позиции на десктоп/планшетах.
-   На мобильных переопределяется (нижняя позиция через bottom). */
+/* Контент поверх изображения: теперь в потоке (чтобы кнопка не накрывала заголовок) */
+.hero-content {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  max-width: 1100px;
+  padding: 10px 20px;
+}
+
+/* Заголовок */
+.hero-title {
+  font-family: "Georgia", serif;
+  font-size: 56px;
+  line-height: 1.05;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.45), 0 6px 24px rgba(0,0,0,0.35);
+  z-index: 30;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Кнопка — по умолчанию в потоке (relative), под заголовком */
 .hero-cta {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: var(--hero-cta-top);
-  z-index: 30; /* над градиентом и картинкой */
+  position: relative;
   background: white;
   color: #166534;
   padding: 12px 28px;
@@ -198,6 +218,7 @@ header.hero::before {
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(16,185,129,0.12);
   transition: all 0.18s ease;
+  z-index: 30;
 }
 
 /* фокус-стиль */
@@ -375,10 +396,12 @@ footer {
   :root { --hero-cta-top: 32%; } /* при необходимости правьте тут */
   .hero-cta { padding: 10px 22px; }
   header.hero { min-height: 60vh; }
+  .hero-title { font-size: 44px; }
 }
 
 /* Мобильные: делаем header ровно как видимая область (без нав-бара) чтобы кнопка была в зоне видимости.
-   Также оставляем object-fit: contain, чтобы изображение не обрезалось. */
+   На мобильных используем object-fit: contain чтобы не обрезать важные элементы у картинки,
+   и переводим кнопку в абсолютное положение от низа. */
 @media (max-width: 768px) {
   :root { --nav-height: 56px; }
   section,
@@ -390,7 +413,7 @@ footer {
 
   .site-logo { height: 96px; }
 
-  /* делаем hero точно по высоте видимой области минус высота навбара (чтобы кнопка показывалась сразу) */
+  /* делаем hero ровно по высоте видимой области минус высота навбара (чтобы кнопка показывалась сразу) */
   header.hero {
     height: calc(100vh - var(--nav-height));
     min-height: auto;
@@ -398,18 +421,27 @@ footer {
   }
 
   .hero-image {
-    object-fit: contain; /* сохраняем целиком изображение — нет некорректного обрезания */
+    object-fit: contain; /* MOBILE: показываем весь рисунок без обрезки */
     object-position: center top;
+    background-color: #062e14;
   }
 
-  /* переключаемся на позицию от низа, чтобы кнопка стабильно располагается */
+  .hero-title {
+    font-size: 28px;
+    white-space: normal;
+  }
+
+  /* На мобильных переводим кнопку в абсолютное положение от низа экрана,
+     чтобы она всегда была видна без прокрутки */
   .hero-cta {
-    top: auto;
+    position: absolute;
     bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     padding: 10px 18px;
     font-size: 15px;
+    z-index: 40;
+    margin: 0;
   }
 
   .nav ul {
@@ -477,11 +509,13 @@ footer {
   </div>
 </nav>
 
-<!-- Кнопка — абсолютная и расположена поверх hero.
-     Используем реальное изображение с object-fit внутри header, чтобы избежать случайной обрезки. -->
+<!-- HERO: добавлено hero-content (заголовок + кнопка) и использована hero3.png -->
 <header id="home" class="hero" role="img" aria-label="Баннер 'Расти свой сад с УралРостСад'">
   <img src="img/hero3.png" alt="Расти свой сад с УралРостСад" class="hero-image" />
-  <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
+  <div class="hero-content">
+    <h1 class="hero-title">Расти свой сад с УралРостСад!</h1>
+    <button id="openPriceModal" class="hero-cta" aria-label="Получить актуальный прайс">Получить актуальный прайс</button>
+  </div>
 </header>
 
 <section id="categories" class="categories">
